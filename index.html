@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Query Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .search-form {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .results-section {
+            padding: 40px;
+            display: none;
+        }
+        
+        .results-section.show {
+            display: block;
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .results-header h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .search-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .usage-guide {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .usage-guide h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .usage-guide p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        
+        .usage-steps {
+            margin-bottom: 25px;
+        }
+        
+        .usage-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .step-content p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.95em;
+        }
+        
+        .pro-tips {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .pro-tips ul {
+            margin: 10px 0 0 20px;
+            color: #856404;
+        }
+        
+        .pro-tips li {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        .footer-content a {
+            color: #74b9ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-content a:hover {
+            color: #0984e3;
+            text-decoration: underline;
+        }
+        
+        .footer-subtitle {
+            opacity: 0.8;
+            font-size: 0.95em !important;
+            margin-top: 8px !important;
+            font-style: italic;
+        }
+        
+        .search-links {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .search-link {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .search-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        
+        .search-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .link-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .link-description {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .search-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .query-preview {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #495057;
+            word-break: break-all;
+        }
+        
+        .institution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .institution-checkbox {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.2s ease;
+        }
+        
+        .institution-checkbox:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .institution-checkbox input {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+        
+        .institution-checkbox label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .advanced-options {
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .advanced-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .advanced-content {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .advanced-content.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .search-form, .results-section {
+                padding: 20px;
+            }
+            
+            .institution-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Search Query Generator</h1>
+            <p>Generate powerful search links to find people across institutions</p>
+        </div>
+        
+        <div class="search-form">
+            <div class="form-group">
+                <label for="alumniName">Alumni Name *</label>
+                <input type="text" id="alumniName" placeholder="e.g., John Doe" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Target Institutions</label>
+                <div class="institution-grid">
+                    <div class="institution-checkbox">
+                        <input type="checkbox" id="spit" checked>
+                        <label for="spit">Sardar Patel Institute of Technology</label>
+                    </div>
+                    <div class="institution-checkbox">
+                        <input type="checkbox" id="spce" checked>
+                        <label for="spce">Sardar Patel College of Engineering</label>
+                    </div>
+                    <div class="institution-checkbox">
+                        <input type="checkbox" id="mumbai" checked>
+                        <label for="mumbai">University of Mumbai</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="advanced-options">
+                <button class="advanced-toggle" onclick="toggleAdvanced()">⚙️ Advanced Options</button>
+                <div class="advanced-content" id="advancedContent">
+                    <div class="form-group">
+                        <label for="additionalKeywords">Additional Keywords (optional)</label>
+                        <input type="text" id="additionalKeywords" placeholder="e.g., Software Engineer, Mumbai, Class of 2020">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchType">Search Strategy</label>
+                        <select id="searchType">
+                            <option value="comprehensive">Comprehensive (All variations)</option>
+                            <option value="linkedin-focused">LinkedIn Focused</option>
+                            <option value="broad">Broad Web Search</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="search-btn" onclick="generateSearchLinks()">🔍 Generate Search Links</button>
+        </div>
+        
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2>Search Links Generated</h2>
+                <div class="search-info">
+                    <strong>💡 Pro Tip:</strong> These Google search links are dynamically generated and will always show current results, even if LinkedIn profiles change or move.
+                </div>
+            </div>
+            <div class="search-links" id="searchLinksContainer">
+                <!-- Search links will be populated here -->
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-content">
+                <p>Made with ❤️ by <a href="https://www.linkedin.com/in/swapnilbawane/" target="_blank">Swapnil Bawane</a></p>
+                <p class="footer-subtitle">Simplifying alumni discovery, one search at a time</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAdvanced() {
+            const content = document.getElementById('advancedContent');
+            const button = document.querySelector('.advanced-toggle');
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                button.textContent = '⚙️ Advanced Options';
+            } else {
+                content.classList.add('show');
+                button.textContent = '⚙️ Hide Advanced Options';
+            }
+        }
+        
+        function generateSearchLinks() {
+            const name = document.getElementById('alumniName').value.trim();
+            if (!name) {
+                alert('Please enter an alumni name');
+                return;
+            }
+            
+            const institutions = {
+                spit: document.getElementById('spit').checked,
+                spce: document.getElementById('spce').checked,
+                mumbai: document.getElementById('mumbai').checked
+            };
+            
+            const additionalKeywords = document.getElementById('additionalKeywords').value.trim();
+            const searchType = document.getElementById('searchType').value;
+            
+            const searchLinks = generateLinks(name, institutions, additionalKeywords, searchType);
+            displayResults(name, searchLinks);
+        }
+        
+        function generateLinks(name, institutions, additionalKeywords, searchType) {
+            const encodedName = encodeURIComponent(`"${name}"`);
+            const links = [];
+            
+            // Institution name mappings
+            const institutionNames = {
+                spit: 'Sardar Patel Institute of Technology',
+                spce: 'Sardar Patel College of Engineering',
+                mumbai: 'University of Mumbai'
+            };
+            
+            if (searchType === 'comprehensive' || searchType === 'linkedin-focused') {
+                // LinkedIn-specific searches for each selected institution
+                Object.keys(institutions).forEach(key => {
+                    if (institutions[key]) {
+                        const institution = encodeURIComponent(`"${institutionNames[key]}"`);
+                        const url = `https://www.google.com/search?q=site:linkedin.com/in+${encodedName}+${institution}`;
+                        
+                        links.push({
+                            title: `LinkedIn - ${institutionNames[key]}`,
+                            description: `Search LinkedIn profiles specifically for ${name} who studied at ${institutionNames[key]}`,
+                            url: url,
+                            query: `site:linkedin.com/in "${name}" "${institutionNames[key]}"`
+                        });
+                    }
+                });
+            }
+            
+            if (searchType === 'comprehensive' || searchType === 'broad') {
+                // OR search across multiple institutions
+                const selectedInstitutions = Object.keys(institutions)
+                    .filter(key => institutions[key])
+                    .map(key => `"${institutionNames[key]}"`)
+                    .join('+OR+');
+                
+                if (selectedInstitutions) {
+                    const orSearchUrl = `https://www.google.com/search?q=${encodedName}+(${encodeURIComponent(selectedInstitutions.replace(/\+/g, ' '))})`;
+                    links.push({
+                        title: 'Multi-Institution Search',
+                        description: `Search across all selected institutions using OR logic for broader results`,
+                        url: orSearchUrl,
+                        query: `"${name}" (${selectedInstitutions.replace(/\+OR\+/g, ' OR ')})`
+                    });
+                }
+                
+                // Broad Sardar Patel search
+                const broadUrl = `https://www.google.com/search?q=${encodedName}+${encodeURIComponent('"Sardar Patel"')}`;
+                links.push({
+                    title: 'Broad Sardar Patel Search',
+                    description: `General search for ${name} associated with any Sardar Patel institution`,
+                    url: broadUrl,
+                    query: `"${name}" "Sardar Patel"`
+                });
+            }
+            
+            // Add additional keywords if provided
+            if (additionalKeywords) {
+                const keywordsEncoded = encodeURIComponent(`"${additionalKeywords}"`);
+                const keywordUrl = `https://www.google.com/search?q=${encodedName}+${keywordsEncoded}`;
+                links.push({
+                    title: 'Custom Keywords Search',
+                    description: `Search for ${name} with your specified keywords: ${additionalKeywords}`,
+                    url: keywordUrl,
+                    query: `"${name}" "${additionalKeywords}"`
+                });
+            }
+            
+            return links;
+        }
+        
+        function displayResults(name, searchLinks) {
+            const resultsSection = document.getElementById('resultsSection');
+            const container = document.getElementById('searchLinksContainer');
+            
+            container.innerHTML = '';
+            
+            searchLinks.forEach((link, index) => {
+                const linkElement = document.createElement('div');
+                linkElement.className = 'search-link';
+                linkElement.innerHTML = `
+                    <div class="link-title">${link.title}</div>
+                    <div class="link-description">${link.description}</div>
+                    <a href="${link.url}" target="_blank" class="search-button">🔍 Search Google</a>
+                    <div class="query-preview">Query: ${link.query}</div>
+                `;
+                container.appendChild(linkElement);
+            });
+            
+            resultsSection.classList.add('show');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Allow Enter key to trigger search
+        document.getElementById('alumniName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateSearchLinks();
+            }
+        });
+        
+        // Auto-populate with example on page load
+        window.addEventListener('load', function() {
+            // Keep input empty on load, just show placeholder
+            document.getElementById('alumniName').value = '';
+        });
+    </script>
+</body>
+</html>
